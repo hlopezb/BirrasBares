@@ -1,0 +1,42 @@
+﻿@model IEnumerable<BirrasBares.Models.Bar>
+
+@{
+    ViewData["Title"] = "Índice de Bares";
+}
+
+<h1>Índice de Bares</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Crear Nuevo Bar</a>
+</p>
+
+@if (Model.Any())
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>@Html.DisplayNameFor(model => model.Nombre)</th>
+                <th>@Html.DisplayNameFor(model => model.Direccion)</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var bar in Model)
+            {
+                <tr>
+                    <td>@Html.DisplayFor(modelItem => bar.Nombre)</td>
+                    <td>@Html.DisplayFor(modelItem => bar.Direccion)</td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@bar.Id" class="btn btn-info btn-sm">Detalles</a>
+                        <a asp-action="Edit" asp-route-id="@bar.Id" class="btn btn-warning btn-sm">Editar</a>
+                        <a asp-action="Delete" asp-route-id="@bar.Id" class="btn btn-danger btn-sm">Eliminar</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No hay bares para mostrar.</p>
+}

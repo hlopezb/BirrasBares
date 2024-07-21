@@ -1,0 +1,53 @@
+﻿@{
+    ViewData["Title"] = "BirrasBares - Inicio";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Bienvenido a BirrasBares</h1>
+    <p>Tu guía para encontrar las mejores cervezas y bares.</p>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-4">
+        <h2>Bares</h2>
+        <p>Descubre los mejores bares de tu ciudad.</p>
+        <a href="@Url.Action("Index", "Bares")" class="btn btn-primary">Ver Bares</a>
+    </div>
+    <div class="col-md-4">
+        <h2>Cervezas</h2>
+        <p>Explora nuestra selección de cervezas artesanales e internacionales.</p>
+        <a href="@Url.Action("Index", "Cervezas")" class="btn btn-primary">Ver Cervezas</a>
+    </div>
+    <div class="col-md-4">
+        <h2>Eventos</h2>
+        <p>No te pierdas los próximos eventos cerveceros.</p>
+        <a href="@Url.Action("Index", "Eventos")" class="btn btn-primary">Ver Eventos</a>
+    </div>
+</div>
+
+@if (!User.Identity.IsAuthenticated)
+{
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <h2>¿Eres nuevo?</h2>
+            <p>Regístrate para calificar bares y cervezas, y recibir recomendaciones personalizadas.</p>
+            <a href="@Url.Action("Register", "Account")" class="btn btn-success">Registrarse</a>
+        </div>
+        <div class="col-md-6">
+            <h2>¿Ya tienes una cuenta?</h2>
+            <p>Inicia sesión para acceder a todas las funcionalidades.</p>
+            <a href="@Url.Action("Login", "Account")" class="btn btn-info">Iniciar Sesión</a>
+        </div>
+    </div>
+}
+else
+{
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <h2>¡Bienvenido de vuelta!</h2>
+            <p>¿Qué te apetece hacer hoy?</p>
+            <a href="@Url.Action("MisCalificaciones", "Usuario")" class="btn btn-info">Ver Mis Calificaciones</a>
+            <a href="@Url.Action("Recomendaciones", "Usuario")" class="btn btn-success">Obtener Recomendaciones</a>
+        </div>
+    </div>
+}
