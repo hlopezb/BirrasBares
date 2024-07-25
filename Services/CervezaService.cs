@@ -1,5 +1,6 @@
 ﻿using BirrasBares.Models;
 using BirrasBares.Repositories;
+using BirrasBares.ViewModel;
 
 namespace BirrasBares.Services
 {
@@ -46,6 +47,48 @@ namespace BirrasBares.Services
                 Puntuacion = puntuacion
             };
             await _cervezaRepository.AddOrUpdateCervezaClasificacionAsync(clasificacion);
+        }
+
+        public async Task<IEnumerable<CervezaListViewModel>> SearchCervezasAsync(string marcaNombre, string estilo, decimal? graduacionMin, decimal? graduacionMax, int? ibuMin, int? ibuMax, bool? esArtesanal)
+        {
+            var cervezas = await _cervezaRepository.SearchCervezasAsync(marcaNombre, estilo, graduacionMin, graduacionMax, ibuMin, ibuMax, esArtesanal);
+            return cervezas.Select(c => new CervezaListViewModel
+            {
+                Id = c.Id,
+                Nombre = c.Nombre,
+                MarcaNombre = c.Marca.Nombre,
+                Estilo = c.Estilo,
+                Graduacion = c.Graduacion
+            });
+        }
+
+        public async Task<CervezaDetailsViewModel> GetCervezaDetailsAsync(int id)
+        {
+            var cerveza = await _cervezaRepository.GetCervezaByIdAsync(id);
+            if (cerveza == null) return null;
+
+            return new CervezaDetailsViewModel
+            {
+                Id = cerveza.Id,
+                Nombre = cerveza.Nombre,
+                MarcaNombre = cerveza.Marca.Nombre,
+                Estilo = cerveza.Estilo,
+                Graduacion = cerveza.Graduacion,
+                IBU = cerveza.IBU,
+                Descripcion = cerveza.Descripcion,
+                Color = cerveza.Color,
+                Aroma = cerveza.Aroma,
+                Sabor = cerveza.Sabor,
+                Maridaje = cerveza.Maridaje,
+                EsArtesanal = cerveza.EsArtesanal,
+                DisponibleTodoElAño = cerveza.DisponibleTodoElAño,
+                ImagenUrl = cerveza.ImagenUrl
+            };
+        }
+
+        public async Task<IEnumerable<string>> GetAllEstilosAsync()
+        {
+            return await _cervezaRepository.GetAllEstilosAsync();
         }
     }
 }

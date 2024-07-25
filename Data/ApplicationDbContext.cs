@@ -19,6 +19,7 @@ namespace BirrasBares.Data
         public DbSet<PlatoMenu> PlatosMenu { get; set; }
         public DbSet<BarClasificacion> BarClasificaciones { get; set; }
         public DbSet<CervezaClasificacion> CervezaClasificaciones { get; set; }
+        public DbSet<Marca> Marcas { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -78,6 +79,12 @@ namespace BirrasBares.Data
                 .HasOne(cc => cc.Cerveza)
                 .WithMany(c => c.Clasificaciones)
                 .HasForeignKey(cc => cc.CervezaId);
+
+            modelBuilder.Entity<Cerveza>()
+                .HasOne(c => c.Marca)
+                .WithMany(m => m.Cervezas)
+                .HasForeignKey(c => c.MarcaId);
+
         }
     }
 }

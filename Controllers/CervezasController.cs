@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using BirrasBares.Models;
 using BirrasBares.Services;
-using BirrasBares.Models;
+using BirrasBares.ViewModel;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Security.Claims;
 
 namespace BirrasBares.Controllers
@@ -9,27 +11,65 @@ namespace BirrasBares.Controllers
     public class CervezasController : Controller
     {
         private readonly ICervezaService _cervezaService;
+        private readonly IMarcaService _marcaService;
 
-        public CervezasController(ICervezaService cervezaService)
+        public CervezasController(ICervezaService cervezaService, IMarcaService marcaService)
         {
             _cervezaService = cervezaService;
+            _marcaService = marcaService;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(CervezaSearchViewModel searchModel)
         {
-            var cervezas = await _cervezaService.GetAllCervezasAsync();
-            return View(cervezas);
+            var cervezas = await _cervezaService.SearchCervezasAsync(
+                searchModel.MarcaNombre,
+                searchModel.Estilo,
+                searchModel.GraduacionMin,
+                searchModel.GraduacionMax,
+                searchModel.IBUMin,
+                searchModel.IBUMax,
+                searchModel.EsArtesanal
+            );
+
+            var marcas = await _marcaService.GetAllMarcasAsync();
+            var estilos = await _cervezaService.GetAllEstilosAsync();
+
+            var viewModel = new CervezaSearchViewModel
+            {
+                Cervezas = cervezas.ToList(),
+                Marcas = new SelectList(marcas, "Nombre", "Nombre", searchModel.MarcaNombre),
+                Estilos = new SelectList(estilos, searchModel.Estilo),
+                MarcaNombre = searchModel.MarcaNombre,
+                Estilo = searchModel.Estilo,
+                GraduacionMin = searchModel.GraduacionMin,
+                GraduacionMax = searchModel.GraduacionMax,
+                IBUMin = searchModel.IBUMin,
+                IBUMax = searchModel.IBUMax,
+                EsArtesanal = searchModel.EsArtesanal
+            };
+            return View(viewModel);
         }
 
         public async Task<IActionResult> Details(int id)
         {
-            var cerveza = await _cervezaService.GetCervezaByIdAsync(id);
+            var cerveza = await _cervezaService.GetCervezaDetailsAsync(id);
             if (cerveza == null)
             {
                 return NotFound();
             }
-            return View(cerveza);
+            return PartialView("_CervezaDetails", cerveza);
         }
+
+        public IActionResult LimpiarFiltros()
+        {
+            return RedirectToAction(nameof(Index));
+        }
+
+
+
+
+
+
 
         [Authorize]
         public IActionResult Create()

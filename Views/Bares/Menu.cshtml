@@ -1,0 +1,71 @@
+﻿@model IEnumerable<BirrasBares.Models.PlatoMenu>
+
+@{
+    ViewData["Title"] = $"Menú de {ViewBag.BarNombre}";
+}
+
+<h1>Menú de @ViewBag.BarNombre</h1>
+
+<p>
+    <a asp-action="CreatePlato" asp-route-barId="@ViewBag.BarId" class="btn btn-primary">Añadir Nuevo Plato</a>
+</p>
+
+@if (Model.Any())
+{
+    <div class="row">
+        @foreach (var plato in Model)
+        {
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    @if (!string.IsNullOrEmpty(plato.ImagenUrl))
+                    {
+                        <img src="@plato.ImagenUrl" class="card-img-top" alt="@plato.Nombre">
+                    }
+                    <div class="card-body">
+                        <h5 class="card-title">@plato.Nombre</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">@plato.Categoria</h6>
+                        <p class="card-text">
+                            @if (plato.Descripcion?.Length > 100)
+                            {
+                                @(plato.Descripcion.Substring(0, 100) + "...")
+                            }
+                            else
+                            {
+                                @plato.Descripcion
+                            }
+                        </p>
+                        <p class="card-text">
+                            <strong>Precio:</strong> @plato.Precio.ToString("C")
+                        </p>
+                        <div class="btn-group" role="group">
+                            <a asp-action="EditPlato" asp-route-id="@plato.Id" class="btn btn-warning btn-sm">Editar</a>
+                            <a asp-action="DeletePlato" asp-route-id="@plato.Id" class="btn btn-danger btn-sm">Eliminar</a>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        @if (plato.EsVegano)
+                        {
+                            <span class="badge bg-success">Vegano</span>
+                        }
+                        @if (plato.EsVegetariano)
+                        {
+                            <span class="badge bg-primary">Vegetariano</span>
+                        }
+                        @if (plato.EsSinGluten)
+                        {
+                            <span class="badge bg-info">Sin Gluten</span>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+else
+{
+    <p>Este bar aún no tiene platos en su menú.</p>
+}
+
+<div>
+    <a asp-action="Details" asp-route-id="@ViewBag.BarId">Volver a los detalles del bar</a>
+</div>

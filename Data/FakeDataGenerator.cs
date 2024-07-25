@@ -12,6 +12,7 @@ namespace BirrasBares.Data
 
         private static readonly string[] MarcasCerveza = new[] { "BrewMaster", "HopHeaven", "MaltMania", "CraftKings", "BarrelAged", "PureBrew", "ArtesanalCo", "LúpuloLoco", "CervezArtista", "MicroBrew" };
         private static readonly string[] EstilosCerveza = new[] { "Lager", "IPA", "Stout", "Wheat Beer", "Pale Ale", "Pilsner", "Porter", "Brown Ale", "Sour", "Saison", "Barleywine", "Bock", "Doppelbock", "Hefeweizen", "Dunkel", "Kölsch" };
+        private static readonly string[] PaisesCerveceros = new[] { "Alemania", "Bélgica", "Estados Unidos", "Reino Unido", "República Checa", "España", "Holanda", "Irlanda", "México", "Japón" };
         private static readonly string[] ColoresCerveza = new[] { "Dorada", "Ámbar", "Rubia", "Negra", "Rojiza", "Cobriza", "Caramelo", "Pálida", "Oscura", "Caoba" };
         private static readonly string[] DescriptoresAroma = new[] { "Afrutado", "Floral", "Cítrico", "Maltoso", "Especiado", "Herbáceo", "Caramelo", "Tropical", "Resinoso", "Tostado" };
         private static readonly string[] DescriptoresSabor = new[] { "Amargo", "Dulce", "Ácido", "Maltoso", "Afrutado", "Especiado", "Tostado", "Caramelizado", "Cítrico", "Equilibrado" };
@@ -65,11 +66,21 @@ namespace BirrasBares.Data
             return barFaker.Generate(count);
         }
 
-        public static List<Cerveza> GenerateFakeBeers(int count)
+        public static List<Marca> GenerateFakeMarcas(int count)
+        {
+            var marcaFaker = new Faker<Marca>()
+                .RuleFor(m => m.Nombre, f => f.PickRandom(MarcasCerveza))
+                .RuleFor(m => m.Descripcion, f => f.Lorem.Paragraph())
+                .RuleFor(m => m.PaisOrigen, f => f.PickRandom(PaisesCerveceros))
+                .RuleFor(m => m.SitioWeb, f => f.Internet.Url());
+
+            return marcaFaker.Generate(count);
+        }
+
+        public static List<Cerveza> GenerateFakeBeers(int count, List<Marca> marcas)
         {
             var cervezaFaker = new Faker<Cerveza>("es")
                 .RuleFor(c => c.Nombre, f => StringUtils.SafeSubstring($"{f.PickRandom("La", "El")} {f.Commerce.ProductName()}", 100))
-                .RuleFor(c => c.Marca, f => f.PickRandom(MarcasCerveza))
                 .RuleFor(c => c.Estilo, f => f.PickRandom(EstilosCerveza))
                 .RuleFor(c => c.Graduacion, f => Math.Round(f.Random.Decimal(4.0m, 10.0m), 1))
                 .RuleFor(c => c.IBU, f => f.Random.Number(10, 100))
@@ -86,7 +97,8 @@ namespace BirrasBares.Data
                 .RuleFor(c => c.Maridaje, f => StringUtils.SafeSubstring(string.Join(", ", f.PickRandom(OpcionesMariaje, 2)), 200))
                 .RuleFor(c => c.EsArtesanal, f => f.Random.Bool(0.7f))
                 .RuleFor(c => c.DisponibleTodoElAño, f => f.Random.Bool(0.8f))
-                .RuleFor(c => c.ImagenUrl, f => StringUtils.SafeSubstring(f.Image.PicsumUrl(), 200));
+                .RuleFor(c => c.ImagenUrl, f => StringUtils.SafeSubstring(f.Image.PicsumUrl(), 200))
+                .RuleFor(c => c.MarcaId, f => f.PickRandom(marcas).Id);
 
             return cervezaFaker.Generate(count);
         }
@@ -224,13 +236,17 @@ namespace BirrasBares.Data
 
         public static void InitializeWithFakeData(ApplicationDbContext context)
         {
-            if (!context.Bares.Any() && !context.Cervezas.Any() && !context.PlatosMenu.Any() && !context.BaresCervezas.Any())
+            if (!context.Marcas.Any() && !context.Bares.Any() && !context.Cervezas.Any() && !context.PlatosMenu.Any() && !context.BaresCervezas.Any())
             {
                 var bares = GenerateFakeBars(10);
                 context.Bares.AddRange(bares);
                 context.SaveChanges();
 
-                var cervezas = GenerateFakeBeers(50);
+                var marcas = GenerateFakeMarcas(20);
+                context.Marcas.AddRange(marcas);
+                context.SaveChanges();
+
+                var cervezas = GenerateFakeBeers(100, marcas);
                 context.Cervezas.AddRange(cervezas);
                 context.SaveChanges();
 

@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Encodings.Web;
 using BirrasBares.Models;
-using BirrasBares.ViewModels;
+using BirrasBares.ViewModel;
 
 namespace BirrasBares.Controllers
 {

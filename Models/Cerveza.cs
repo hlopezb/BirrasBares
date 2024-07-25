@@ -15,10 +15,6 @@ public class Cerveza
 
     [Required]
     [StringLength(50)]
-    public string Marca { get; set; }
-
-    [Required]
-    [StringLength(50)]
     public string Estilo { get; set; }
 
     [Required]
@@ -66,4 +62,6 @@ public class Cerveza
     {
         Clasificaciones = new HashSet<CervezaClasificacion>();
     }
+    public int MarcaId { get; set; }
+    public virtual Marca Marca { get; set; }
 }

@@ -15,7 +15,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options => {
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+{
     options.SignIn.RequireConfirmedAccount = true;
     options.SignIn.RequireConfirmedEmail = true;
 })
@@ -77,6 +78,12 @@ builder.Services.AddScoped<ICervezaService, CervezaService>();
 
 builder.Services.AddScoped<IPlatoMenuRepository, PlatoMenuRepository>();
 builder.Services.AddScoped<IPlatoMenuService, PlatoMenuService>();
+
+builder.Services.AddScoped<IMarcaRepository, MarcaRepository>();
+builder.Services.AddScoped<IMarcaService, MarcaService>();
+
+builder.Services.AddScoped<ICervezaRepository, CervezaRepository>();
+builder.Services.AddScoped<ICervezaService, CervezaService>();
 #endregion
 
 #region App

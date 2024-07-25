@@ -1,0 +1,98 @@
+﻿@using BirrasBares.ViewModel
+@model CervezaSearchViewModel
+
+@section Styles {
+    <style>
+        .form-select, .form-control, .btn {
+            font-size: 0.875rem;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        document.getElementById('limpiarFiltros').addEventListener('click', function () {
+            window.location.href = '@Url.Action("LimpiarFiltros", "Cervezas")';
+        });
+    </script>
+}
+
+@{
+    ViewData["Title"] = "Búsqueda de Cervezas";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Búsqueda de Cervezas</h2>
+<form action="/Cervezas/Index" method="get" class="mb-4">
+    <div class="row g-2 align-items-center">
+        <div class="col-auto">
+            <select name="MarcaNombre" asp-for="MarcaNombre" asp-items="Model.Marcas" class="form-select form-select-sm" style="width: auto;">
+                <option value="">Todas las Marcas</option>
+                @foreach (var marca in Model.Marcas)
+                {
+                    <option value="@marca.Value" selected="@(marca.Value == Model.MarcaNombre)">@marca.Text</option>
+                }
+            </select>
+        </div>
+
+        <div class="col-auto">
+            <select name="Estilo" asp-for="Estilo" asp-items="Model.Estilos" class="form-select form-select-sm" style="width: auto;">
+                <option value="">Todos los Estilos</option>
+                @foreach (var estilo in Model.Estilos)
+                {
+                    <option value="@estilo.Text" selected="@(estilo.Text == Model.Estilo)">@estilo.Text</option>
+                }
+            </select>
+        </div>
+        <div class="col-auto">
+            <div class="input-group input-group-sm">
+                <input name="GraduacionMin" asp-for="GraduacionMin" class="form-control" placeholder="Grad. Min" style="width: 80px;" value="@(Model.GraduacionMin?.ToString() ?? "")">
+                <input name="GraduacionMax" asp-for="GraduacionMax" class="form-control" placeholder="Grad. Max" style="width: 80px;" value="@(Model.GraduacionMax?.ToString() ?? "")">
+            </div>
+        </div>
+        <div class="col-auto">
+            <div class="input-group input-group-sm">
+                <input name="IBUMin" asp-for="IBUMin" class="form-control" placeholder="IBU Min" style="width: 70px;" value="@(Model.IBUMin?.ToString() ?? "")">
+                <input name="IBUMax" asp-for="IBUMax" class="form-control" placeholder="IBU Max" style="width: 70px;" value="@(Model.IBUMax?.ToString() ?? "")">
+            </div>
+        </div>
+        <div class="col-auto">
+            <div class="form-check form-switch">
+                <input name="EsArtesanal" asp-for="EsArtesanal" class="form-check-input" type="checkbox" role="switch" id="flexSwitchCheckDefault" checked="@Model.EsArtesanal">
+                <label class="form-check-label" for="flexSwitchCheckDefault">Artesanal</label>
+            </div>
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-primary btn-sm">Buscar</button>
+            <button type="button" id="limpiarFiltros" class="btn btn-secondary btn-sm">Limpiar Filtros</button>
+        </div>
+    </div>
+</form>
+
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Marca</th>
+                <th>Estilo</th>
+                <th>Graduación</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var cerveza in Model.Cervezas)
+            {
+                <tr>
+                    <td>@cerveza.Nombre</td>
+                    <td>@cerveza.MarcaNombre</td>
+                    <td>@cerveza.Estilo</td>
+                    <td>@cerveza.Graduacion%</td>
+                    <td>
+                        <button class="btn btn-info btn-sm" onclick="showInPopup('@Url.Action("Details", "Cervezas", new { id = cerveza.Id })', 'Detalles de la Cerveza')">Ver Detalles</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

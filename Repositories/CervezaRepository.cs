@@ -22,6 +22,7 @@ namespace BirrasBares.Repositories
         {
             return await _context.Cervezas
                 .Include(c => c.Clasificaciones)
+                .Include(c => c.Marca)
                 .Include(c => c.BaresCervezas)
                     .ThenInclude(bc => bc.Bar)
                 .FirstOrDefaultAsync(c => c.Id == id);
@@ -69,6 +70,39 @@ namespace BirrasBares.Repositories
                 _context.CervezaClasificaciones.Update(existingClasificacion);
             }
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<IEnumerable<Cerveza>> SearchCervezasAsync(string marcaNombre, string estilo, decimal? graduacionMin, decimal? graduacionMax, int? ibuMin, int? ibuMax, bool? esArtesanal)
+        {
+            var query = _context.Cervezas.Include(c => c.Marca).AsQueryable();
+
+            if (!string.IsNullOrEmpty(marcaNombre))
+                query = query.Where(c => c.Marca.Nombre.Equals(marcaNombre));
+
+            if (!string.IsNullOrEmpty(estilo))
+                query = query.Where(c => c.Estilo.Equals(estilo));
+
+            if (graduacionMin.HasValue)
+                query = query.Where(c => c.Graduacion >= graduacionMin.Value);
+
+            if (graduacionMax.HasValue)
+                query = query.Where(c => c.Graduacion <= graduacionMax.Value);
+
+            if (ibuMin.HasValue)
+                query = query.Where(c => c.IBU >= ibuMin.Value);
+
+            if (ibuMax.HasValue)
+                query = query.Where(c => c.IBU <= ibuMax.Value);
+
+            if (esArtesanal.HasValue)
+                query = query.Where(c => c.EsArtesanal == esArtesanal.Value);
+
+            return await query.ToListAsync();
+        }
+
+        public async Task<IEnumerable<string>> GetAllEstilosAsync()
+        {
+            return await _context.Cervezas.Select(c => c.Estilo).Distinct().OrderBy(e => e).ToListAsync();
         }
     }
 }

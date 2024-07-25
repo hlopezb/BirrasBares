@@ -1,0 +1,22 @@
+﻿@using BirrasBares.ViewModel
+@model CervezaDetailsViewModel
+
+<div class="row">
+    @* <div class="col-md-4">
+        <img src="@Model.ImagenUrl" alt="@Model.Nombre" class="img-fluid" />
+    </div> *@
+    <div class="col-md-8">
+        <h3>@Model.Nombre</h3>
+        <p><strong>Marca:</strong> @Model.MarcaNombre</p>
+        <p><strong>Estilo:</strong> @Model.Estilo</p>
+        <p><strong>Graduación:</strong> @Model.Graduacion%</p>
+        <p><strong>IBU:</strong> @Model.IBU</p>
+        <p><strong>Descripción:</strong> @Model.Descripcion</p>
+        <p><strong>Color:</strong> @Model.Color</p>
+        <p><strong>Aroma:</strong> @Model.Aroma</p>
+        <p><strong>Sabor:</strong> @Model.Sabor</p>
+        <p><strong>Maridaje:</strong> @Model.Maridaje</p>
+        <p><strong>Artesanal:</strong> @(Model.EsArtesanal ? "Sí" : "No")</p>
+        <p><strong>Disponible todo el año:</strong> @(Model.DisponibleTodoElAño ? "Sí" : "No")</p>
+    </div>
+</div>
